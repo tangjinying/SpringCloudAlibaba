@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: product-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.177:8848/
+        ip: 192.168.0.177
+    sentinel:
+      transport:
+        # sentinel服务端地址
+        dashboard: 192.168.0.189:8858
+        client-ip: 192.168.0.177
+      # 取消延迟加载
+      eager: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://192.168.0.189:3306/spring_cloud_alibaba_product?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+
+feign:
+  httpclient:
+    connection-timeout: 60000
+    connection-timer-repeat: 3000
+ribbon:
+  ConnectTimeout: 60000 # 设置连接超时时间 default 2000
+  ReadTimeout: 60000   # 设置读取超时时间  default 5000
+  OkToRetryOnAllOperations: true # 对所有操作请求都进行重试  default false
+  MaxAutoRetriesNextServer: 20    # 切换实例的重试次数  default 1
+  MaxAutoRetries: 10     # 对当前实例的重试次数 default 0
+
+
+
+security:
+  oauth2:
+    resource:
+#      user-info-uri: http://localhost:5000/user/current/get
+      id: product-service
+
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  tx-service-group: product_service_group
+  enable-auto-data-source-proxy: true
+  config:
+    type: nacos
+    nacos:
+      namespace:
+      serverAddr: 192.168.0.177:8848
+      group: SEATA_GROUP
+      userName: "nacos"
+      password: "nacos"
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 192.168.0.177:8848
+      group: DEFAULT_GROUP
+      namespace:
+      userName: "nacos"
+      password: "nacos"
+  service:
+    vgroup-mapping:
+      product_service_group: default
+server:
+  port: 8030
+logging:
+  level:
+    com.alibaba.nacos.client.config.impl: WARN
