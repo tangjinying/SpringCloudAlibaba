@@ -1,0 +1,32 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.177:8848
+        ip: 192.168.0.177
+  application:
+    name: account-dubbo
+
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://192.168.0.189:3306/spring_cloud_alibaba?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+
+dubbo:
+  scan:
+    base-packages: com.tjy.dubbo.service
+  protocol:
+    name: dubbo
+    port: -1
+    host: 192.168.0.177
+  application:
+    id: account-dubbo
+  registry:
+    address: spring-cloud://192.168.0.189
+    check: false
+  consumer:
+    check: false
+  cloud:
+    subscribed-services: order-service

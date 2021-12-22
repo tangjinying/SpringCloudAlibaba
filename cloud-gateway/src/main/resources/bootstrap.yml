@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: cloud-gateway
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://192.168.0.189:3306/auth_config?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.177:8848/
+        ip: 192.168.0.177
+    sentinel:
+      transport:
+        # sentinel服务端地址
+        dashboard: 192.168.0.189:8858
+        clientIp: 192.168.0.177
+      # 取消延迟加载
+      eager: true
+      datasource:
+        ds:
+          nacos:
+            server-addr: 192.168.0.177:8848
+            data-id: gateway-sentinel-flow
+            data-type: json
+            group-id: DEFAULT_GROUP
+            rule-type: gw-flow
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: produce-service
+          uri: lb://product-service
+          predicates:
+            - Path=/product/**
+        - id: account-service
+          uri: lb://account-service
+          predicates:
+            - Path=/account/**
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/order/**
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/oauth/**
+      default-filters:
+        - StripPrefix=1
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      database: person
+server:
+  port: 8090
+
+logging:
+  level:
+    com.alibaba.nacos.client.config.impl: WARN

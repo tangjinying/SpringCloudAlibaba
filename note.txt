@@ -1,0 +1,18 @@
+feign: 服务调用
+    消费方映入坐标：
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+    定义feign接口，和要调用的服务的接口定义完全相同。添加@FeignClient(name = "调用的微服务的名称")。表明这是一个feign客户端，请求的方法会转发到name属性对应的微服务上
+    消费者启动类添加注解：@EnableFeignClients(basePackages = "com.tjy.feign") 指定feign接口所在包
+    服务端无需配置
+
+    notice：
+        1、Feign不支持直接使用对象作为参数请求接口中如果有多参数需要用实体接收，要么把参数一个一个摆开，要么在对象参数上加上@RequestBody注解，让其以json方式接收
+        2、消费者模块启动类上使用@EnableFeignClients注解后一定要指明Feign接口所在的包路径
+        3、在Feign接口层使用@RequestParam注解要注意，一定要加上value属性
+        4、PathVariable的坑在Feign接口层使用@PathVariable注解要注意，一定要加上value属性
+
+feign服务调用过程中Access_Token丢失问题：
+    定义拦截器（实现RequestInterceptor接口），在请求前获取请求头中的Access_Token，传递给下游服务
